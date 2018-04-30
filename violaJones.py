@@ -20,6 +20,11 @@ feature2 = []
 feature3 = []
 feature4 = []
 feature5 = []
+nilai1 = []
+nilai2 = []
+nilai3 = []
+nilai4 = []
+nilai5 = []
 
 # method integralImage to generate the value of integralimage of image to array result
 def integralImage():    
@@ -43,13 +48,23 @@ def haarFeature(feature,a,b):
     i = 1
     #j = 0
     while(a*i <= image.shape[1]):
-        j = 0
+        j = 1
         while(b*j <= image.shape[0]):            
             feature.append((b*j,a*i))
             j = j+1
         i = i+1
         
-   
+# method applyFeature to apply possible size of feature to image
+def applyFeature(feature, nilai):
+    for x in range(len(feature)):
+        a = 0
+        while(feature[x][0] + a <= result.shape[0]):
+            b = 0
+            while(feature[x][1] + b <= result.shape[1]):
+                nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
+                #print((str)(a)+ ','+(str)(feature[x][1] + a))
+                b = b + 1
+            a = a + 1
         
 # generate value of integral image
 integralImage()
@@ -61,4 +76,9 @@ haarFeature(feature2,1,2)
 haarFeature(feature3,3,1)
 haarFeature(feature4,1,3)
 haarFeature(feature5,2,2)
-    
+
+applyFeature(feature1,nilai1)
+applyFeature(feature2,nilai2)
+applyFeature(feature3,nilai3)
+applyFeature(feature4,nilai4)
+applyFeature(feature5,nilai5)
