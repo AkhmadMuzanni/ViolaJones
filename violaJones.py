@@ -56,7 +56,7 @@ def haarFeature(feature,a,b):
             j = j+1
         i = i+1
         
-# method applyFeature to apply possible size of feature to image (i,j,w,h) => i = initial x position, j = initial y position, w = width of feature, h = height of feature
+# method applyFeature to apply possible size of feature to image (i,j,w,h) => i = initial x position, j = initial y position, w = factor scaling of width of feature, h = factor scaling of height of feature
 def applyFeatureAll(feature, noFeature):
     for x in range(len(feature)):
         a = 0
@@ -68,16 +68,24 @@ def applyFeatureAll(feature, noFeature):
                     s1 = intImage(a-1,b-1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]/2) - 1) - intImage(a - 1, b + (feature[x][1]/2) - 1) - intImage(a + feature[x][0] - 1, b - 1)
                     s2 = intImage(a-1,b + (feature[x][1]/2) - 1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(a-1,b + (feature[x][1]) - 1) - intImage(a + feature[x][0] - 1,b + (feature[x][1]/2) - 1)
                     value = s1-s2
-                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2,s1,s2,value))
+                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2,value))
                 elif noFeature == 2:
                     s1 = intImage(a-1,b-1) + intImage(a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(a-1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/2) - 1,b-1)
                     s2 = intImage(a + (feature[x][0]/2) - 1,b-1) + intImage(a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]) - 1, b-1)
                     value = s1-s2
-                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1],s1,s2,value))
+                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1],value))
                 elif noFeature == 3:
-                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/3))
+                    s1 = intImage(a-1,b-1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]/3) - 1) - intImage(a - 1, b + (feature[x][1]/3) - 1) - intImage(a + feature[x][0] - 1, b - 1)
+                    s2 = intImage(a-1,b + (feature[x][1]/3) - 1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1) - intImage(a-1,b + (feature[x][1]/3*2) - 1) - intImage(a + feature[x][0] - 1,b + (feature[x][1]/3) - 1)
+                    s3 = intImage(a-1,b + (feature[x][1]/3*2) - 1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(a-1,b + (feature[x][1]) - 1) - intImage(a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1)
+                    value = s1-s2+s3
+                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/3,value))
                 elif noFeature == 4:
-                    nilai.append((noFeature,a,b,feature[x][0]/3,feature[x][1]))
+                    s1 = intImage(a-1,b-1) + intImage(a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(a-1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/3) - 1,b-1)
+                    s2 = intImage(a + (feature[x][0]/3) - 1,b-1) + intImage(a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/3*2) - 1, b-1)
+                    s3 = intImage(a + (feature[x][0]/3*2) - 1,b-1) + intImage(a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]) - 1, b-1)
+                    value = s1-s2+s3
+                    nilai.append((noFeature,a,b,feature[x][0]/3,feature[x][1],value))
                 else:
                      nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2))   
                 #nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
@@ -93,10 +101,19 @@ print(intImage(0,1))
 
 # search all possible size of 5 haar feature
 haarFeature(feature1,2,1)
+# => [1 0]
 haarFeature(feature2,1,2)
+# => [1]
+#    [0]
 haarFeature(feature3,3,1)
+# => [1 0 1]
 haarFeature(feature4,1,3)
+# => [1]
+#    [0]
+#    [1]
 haarFeature(feature5,2,2)
+# => [1 0]
+#    [0 1]
 
 #applyFeature(feature1,nilai1)
 #applyFeature(feature2,nilai2)
