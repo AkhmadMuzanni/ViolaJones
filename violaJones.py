@@ -63,8 +63,12 @@ def applyFeatureAll(feature, noFeature):
         while(feature[x][0] + a <= result.shape[0]):
             b = 0
             while(feature[x][1] + b <= result.shape[1]):
+                value = 0
                 if noFeature == 1:
-                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2))
+                    s1 = intImage(a-1,b-1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]/2) - 1) - intImage(a - 1, b + (feature[x][1]/2) - 1) - intImage(a + feature[x][0] - 1, b - 1)
+                    s2 = intImage(a-1,b + (feature[x][1]/2) - 1) + intImage(a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(a-1,b + (feature[x][1]) - 1) - intImage(a + feature[x][0] - 1,b + (feature[x][1]/2) - 1)
+                    value = s1-s2
+                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2,s1,s2,value))
                 elif noFeature == 2:
                     nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]))
                 elif noFeature == 3:
@@ -103,13 +107,17 @@ applyFeatureAll(feature3,3)
 applyFeatureAll(feature4,4)
 applyFeatureAll(feature5,5)
 
+myFile = open('example2.csv', 'w')
+with myFile:
+    writer = csv.writer(myFile)
+    writer.writerows(nilai)
 
-with open('example4.csv', 'w') as csvfile:
-    fieldnames = ['first_name', 'last_name', 'Grade']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
- 
-    writer.writeheader()
-    writer.writerow({'Grade': 'B', 'first_name': 'Alex', 'last_name': 'Brian'})
-    writer.writerow({'Grade': 'A', 'first_name': 'Rachael', 'last_name': 'Rodriguez'})
-    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Oscar'})
-    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Loive'})
+#with open('example4.csv', 'w') as csvfile:
+#    fieldnames = ['first_name', 'last_name', 'Grade']
+#    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+# 
+#    writer.writeheader()
+#    writer.writerow({'Grade': 'B', 'first_name': 'Alex', 'last_name': 'Brian'})
+#    writer.writerow({'Grade': 'A', 'first_name': 'Rachael', 'last_name': 'Rodriguez'})
+#    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Oscar'})
+#    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Loive'})
