@@ -7,8 +7,9 @@ Created on Sun Apr 29 11:27:48 2018
 
 import cv2
 import numpy as np
+import csv
 # Read Image and convert it to gray image
-image = cv2.imread('resized_image40x20.jpg')
+image = cv2.imread('resized_image24x24.jpg')
 image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 #cv2.imshow('Testing', image)
 
@@ -25,6 +26,7 @@ nilai2 = []
 nilai3 = []
 nilai4 = []
 nilai5 = []
+nilai = []
 
 # method integralImage to generate the value of integralimage of image to array result
 def integralImage():    
@@ -54,18 +56,20 @@ def haarFeature(feature,a,b):
             j = j+1
         i = i+1
         
-# method applyFeature to apply possible size of feature to image
-def applyFeature(feature, nilai):
+# method applyFeature to apply possible size of feature to image (i,j,w,h) => i = initial x position, j = initial y position, w = width of feature, h = height of feature
+def applyFeatureAll(feature, noFeature):
     for x in range(len(feature)):
         a = 0
         while(feature[x][0] + a <= result.shape[0]):
             b = 0
             while(feature[x][1] + b <= result.shape[1]):
-                nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
+                nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
+                #nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
                 #print((str)(a)+ ','+(str)(feature[x][1] + a))
                 b = b + 1
             a = a + 1
-        
+
+
 # generate value of integral image
 integralImage()
 print(intImage(0,1))
@@ -77,8 +81,25 @@ haarFeature(feature3,3,1)
 haarFeature(feature4,1,3)
 haarFeature(feature5,2,2)
 
-applyFeature(feature1,nilai1)
-applyFeature(feature2,nilai2)
-applyFeature(feature3,nilai3)
-applyFeature(feature4,nilai4)
-applyFeature(feature5,nilai5)
+#applyFeature(feature1,nilai1)
+#applyFeature(feature2,nilai2)
+#applyFeature(feature3,nilai3)
+#applyFeature(feature4,nilai4)
+#applyFeature(feature5,nilai5)
+
+applyFeatureAll(feature1,1)
+applyFeatureAll(feature2,2)
+applyFeatureAll(feature3,3)
+applyFeatureAll(feature4,4)
+applyFeatureAll(feature5,5)
+
+
+with open('example4.csv', 'w') as csvfile:
+    fieldnames = ['first_name', 'last_name', 'Grade']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+ 
+    writer.writeheader()
+    writer.writerow({'Grade': 'B', 'first_name': 'Alex', 'last_name': 'Brian'})
+    writer.writerow({'Grade': 'A', 'first_name': 'Rachael', 'last_name': 'Rodriguez'})
+    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Oscar'})
+    writer.writerow({'Grade': 'B', 'first_name': 'Jane', 'last_name': 'Loive'})
