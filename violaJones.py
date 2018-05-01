@@ -87,7 +87,12 @@ def applyFeatureAll(feature, noFeature):
                     value = s1-s2+s3
                     nilai.append((noFeature,a,b,feature[x][0]/3,feature[x][1],value))
                 else:
-                     nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2))   
+                    s1 = intImage(a-1,b-1) + intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(a - 1, b + (feature[x][1]/2) - 1) - intImage(a + (feature[x][0]/2) - 1, b - 1)
+                    s2 = intImage(a-1,b + (feature[x][1]/2) - 1) + intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(a-1,b + (feature[x][1]) - 1) - intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1)
+                    s3 = intImage(a + (feature[x][0]/2) - 1,b-1) + intImage(a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1) - intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(a + (feature[x][0]) - 1, b-1)
+                    s4 = intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) + intImage(a + (feature[x][0]) - 1,b + (feature[x][1]) - 1) - intImage(a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1)
+                    value = s1-s2-s3+s4
+                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2,value))
                 #nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
                 #nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
                 #print((str)(a)+ ','+(str)(feature[x][1] + a))
