@@ -63,7 +63,17 @@ def applyFeatureAll(feature, noFeature):
         while(feature[x][0] + a <= result.shape[0]):
             b = 0
             while(feature[x][1] + b <= result.shape[1]):
-                nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
+                if noFeature == 1:
+                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2))
+                elif noFeature == 2:
+                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]))
+                elif noFeature == 3:
+                    nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/3))
+                elif noFeature == 4:
+                    nilai.append((noFeature,a,b,feature[x][0]/3,feature[x][1]))
+                else:
+                     nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2))   
+                #nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
                 #nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
                 #print((str)(a)+ ','+(str)(feature[x][1] + a))
                 b = b + 1
