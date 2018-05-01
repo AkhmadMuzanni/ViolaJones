@@ -70,7 +70,10 @@ def applyFeatureAll(feature, noFeature):
                     value = s1-s2
                     nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/2,s1,s2,value))
                 elif noFeature == 2:
-                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1]))
+                    s1 = intImage(a-1,b-1) + intImage(a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(a-1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/2) - 1,b-1)
+                    s2 = intImage(a + (feature[x][0]/2) - 1,b-1) + intImage(a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(a + (feature[x][0]) - 1, b-1)
+                    value = s1-s2
+                    nilai.append((noFeature,a,b,feature[x][0]/2,feature[x][1],s1,s2,value))
                 elif noFeature == 3:
                     nilai.append((noFeature,a,b,feature[x][0],feature[x][1]/3))
                 elif noFeature == 4:
