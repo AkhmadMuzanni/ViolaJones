@@ -22,14 +22,14 @@ def ubahWidth():
 
 #ubah berdasarkan height
 def ubahHeight():
-    baseheight = 24
-    img = Image.open('bahan/1.jpg')
+    baseheight = 40
+    img = Image.open('D://KULIAH/SEMESTER VI/COMPUTER VISION/ViolaJones/positif/10.jpg')
     #hpercent = (baseheight / float(img.size[1]))
     #wsize = int((float(img.size[0]) * float(hpercent)))
-    wsize = 24
+    wsize = 20
     imgUbah = img.resize((wsize, baseheight), PIL.Image.ANTIALIAS)
-    txtHeight = str(baseheight)
-    txtWidth = str(wsize)
-    imgUbah.save('resized_image'+txtHeight+'x'+txtWidth+'.jpg')
+    #txtHeight = str(baseheight)
+    #txtWidth = str(wsize)
+    imgUbah.save('bahan/positif/10.jpg')
 
 ubahHeight();
