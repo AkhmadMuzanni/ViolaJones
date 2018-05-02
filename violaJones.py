@@ -7,8 +7,8 @@ Created on Sun Apr 29 11:27:48 2018
 
 import cv2
 import numpy as np
-import glob
 import csv
+import os
 # Read Image and convert it to gray image
 image = cv2.imread('resized_image40x20.jpg')
 image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
@@ -63,48 +63,69 @@ def haarFeature(feature,a,b):
         i = i+1
         
 # method applyFeature to apply possible size of feature to image (i,j,w,h) => i = initial x position, j = initial y position, w = factor scaling of width of feature, h = factor scaling of height of feature
-def applyFeatureAll(res, feature, noFeature):
+def applyFeatureAll(noImage, res, feature, noFeature):
     values = []
     for x in range(len(feature)):
-        a = 0
-        while(feature[x][0] + a <= res.shape[0]):
-            b = 0
-            while(feature[x][1] + b <= res.shape[1]):
-                value = 0
-                if noFeature == 1:
-                    s1 = intImage(res,a-1,b-1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/2) - 1) - intImage(res,a - 1, b + (feature[x][1]/2) - 1) - intImage(res,a + feature[x][0] - 1, b - 1)
-                    s2 = intImage(res,a-1,b + (feature[x][1]/2) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/2) - 1)
-                    value = s1-s2
-                    values.append((noFeature,a,b,feature[x][0],feature[x][1]/2,value))
-                elif noFeature == 2:
-                    s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(res,a-1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/2) - 1,b-1)
-                    s2 = intImage(res,a + (feature[x][0]/2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
-                    value = s1-s2
-                    values.append((noFeature,a,b,feature[x][0]/2,feature[x][1],value))
-                elif noFeature == 3:
-                    s1 = intImage(res,a-1,b-1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3) - 1) - intImage(res,a - 1, b + (feature[x][1]/3) - 1) - intImage(res,a + feature[x][0] - 1, b - 1)
-                    s2 = intImage(res,a-1,b + (feature[x][1]/3) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1) - intImage(res,a-1,b + (feature[x][1]/3*2) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3) - 1)
-                    s3 = intImage(res,a-1,b + (feature[x][1]/3*2) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1)
-                    value = s1-s2+s3
-                    values.append((noFeature,a,b,feature[x][0],feature[x][1]/3,value))
-                elif noFeature == 4:
-                    s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(res,a-1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3) - 1,b-1)
-                    s2 = intImage(res,a + (feature[x][0]/3) - 1,b-1) + intImage(res,a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3*2) - 1, b-1)
-                    s3 = intImage(res,a + (feature[x][0]/3*2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
-                    value = s1-s2+s3
-                    values.append((noFeature,a,b,feature[x][0]/3,feature[x][1],value))
-                else:
-                    s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a - 1, b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]/2) - 1, b - 1)
-                    s2 = intImage(res,a-1,b + (feature[x][1]/2) - 1) + intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1)
-                    s3 = intImage(res,a + (feature[x][0]/2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
-                    s4 = intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) + intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1)
-                    value = s1-s2-s3+s4
-                    values.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2,value))
-                #nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
-                #nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
-                #print((str)(a)+ ','+(str)(feature[x][1] + a))
-                b = b + 1
-            a = a + 1
+        fileFeature = open('training/feature.csv', 'a')
+        with fileFeature:
+            writerFeature = csv.writer(fileFeature)
+        if (noImage == 0):            
+            fileImage = open('training/dataTrainingR0.csv', 'a')
+        else:            
+            fileImage = open('training/dataTrainingR'+str(noImage)+'.csv', 'a')
+        with fileImage:
+            writer = csv.writer(fileImage)
+            a = 0
+            while(feature[x][0] + a <= res.shape[0]):
+                b = 0
+                while(feature[x][1] + b <= res.shape[1]):
+                    value = 0
+                    if noFeature == 1:
+                        s1 = intImage(res,a-1,b-1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/2) - 1) - intImage(res,a - 1, b + (feature[x][1]/2) - 1) - intImage(res,a + feature[x][0] - 1, b - 1)
+                        s2 = intImage(res,a-1,b + (feature[x][1]/2) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/2) - 1)
+                        value = s1-s2
+                        values.append((noFeature,a,b,feature[x][0],feature[x][1]/2,value))
+                        v = [noFeature,a,b,feature[x][0],feature[x][1]/2,value]
+                        writerFeature.writerow([noFeature,a,b,feature[x][0],feature[x][1]/2])
+                        writer.writerow([value])
+                    elif noFeature == 2:
+                        s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(res,a-1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/2) - 1,b-1)
+                        s2 = intImage(res,a + (feature[x][0]/2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
+                        value = s1-s2
+                        values.append((noFeature,a,b,feature[x][0]/2,feature[x][1],value))
+                        v = [noFeature,a,b,feature[x][0]/2,feature[x][1],value]
+                        writer.writerow([value])
+                    elif noFeature == 3:
+                        s1 = intImage(res,a-1,b-1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3) - 1) - intImage(res,a - 1, b + (feature[x][1]/3) - 1) - intImage(res,a + feature[x][0] - 1, b - 1)
+                        s2 = intImage(res,a-1,b + (feature[x][1]/3) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1) - intImage(res,a-1,b + (feature[x][1]/3*2) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3) - 1)
+                        s3 = intImage(res,a-1,b + (feature[x][1]/3*2) - 1) + intImage(res,a + feature[x][0] - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + feature[x][0] - 1,b + (feature[x][1]/3*2) - 1)
+                        value = s1-s2+s3
+                        values.append((noFeature,a,b,feature[x][0],feature[x][1]/3,value))
+                        v = [noFeature,a,b,feature[x][0],feature[x][1]/3,value]
+                        writer.writerow([value])
+                    elif noFeature == 4:
+                        s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(res,a-1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3) - 1,b-1)
+                        s2 = intImage(res,a + (feature[x][0]/3) - 1,b-1) + intImage(res,a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3*2) - 1, b-1)
+                        s3 = intImage(res,a + (feature[x][0]/3*2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]/3*2) - 1,b + feature[x][1] - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
+                        value = s1-s2+s3
+                        values.append((noFeature,a,b,feature[x][0]/3,feature[x][1],value))
+                        v = [noFeature,a,b,feature[x][0]/3,feature[x][1],value]
+                        writer.writerow([value])
+                    else:
+                        s1 = intImage(res,a-1,b-1) + intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a - 1, b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]/2) - 1, b - 1)
+                        s2 = intImage(res,a-1,b + (feature[x][1]/2) - 1) + intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(res,a-1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1)
+                        s3 = intImage(res,a + (feature[x][0]/2) - 1,b-1) + intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) - intImage(res,a + (feature[x][0]) - 1, b-1)
+                        s4 = intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]/2) - 1) + intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]/2) - 1,b + (feature[x][1]) - 1) - intImage(res,a + (feature[x][0]) - 1,b + (feature[x][1]/2) - 1)
+                        value = s1-s2-s3+s4
+                        values.append((noFeature,a,b,feature[x][0]/2,feature[x][1]/2,value))
+                        v = [noFeature,a,b,feature[x][0]/2,feature[x][1]/2,value]
+                        writer.writerow([value])
+                    #nilai.append((noFeature,a,b,feature[x][0],feature[x][1]))
+                    #nilai.append((a,b,feature[x][0] + a - 1,feature[x][1] + b - 1))
+                    #print((str)(a)+ ','+(str)(feature[x][1] + a))
+                    b = b + 1
+                a = a + 1
+        fileImage.close()
     return values
 
 def adaboost():
@@ -116,20 +137,21 @@ def adaboost():
     print(1.0/total)
     value = []
     # loop for data training    
-    for x in range(10):
+    for x in range(2):
         #result = integralImage(cv2.imread('bahan/positif/'+str(x+1)+'.jpg',0))        
         pict = cv2.imread('bahan/positif/r'+str(x+1)+'.jpg',0)
         value.append([])
-        value[x].append(applyFeatureAll(integralImage(pict),feature1,1))
-        value[x].append(applyFeatureAll(integralImage(pict),feature2,2))
-        value[x].append(applyFeatureAll(integralImage(pict),feature3,3))
-        value[x].append(applyFeatureAll(integralImage(pict),feature4,4))
-        value[x].append(applyFeatureAll(integralImage(pict),feature5,5))
+        value[x].append(applyFeatureAll((x+1),integralImage(pict),feature1,1))
+        value[x].append(applyFeatureAll((x+1),integralImage(pict),feature2,2))
+        value[x].append(applyFeatureAll((x+1),integralImage(pict),feature3,3))
+        value[x].append(applyFeatureAll((x+1),integralImage(pict),feature4,4))
+        value[x].append(applyFeatureAll((x+1),integralImage(pict),feature5,5))
         gambar.append(value)
         #print(result)
         #dataTraining.append(result)
         #dataTraining.append(cv2.imread('bahan/positif/1.jpg',0))
      #= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        
     return value   
 
 # generate value of integral image
@@ -157,17 +179,21 @@ haarFeature(feature5,2,2)
 #applyFeature(feature3,nilai3)
 #applyFeature(feature4,nilai4)
 #applyFeature(feature5,nilai5)
+for x in range(2):
+    try:
+        os.remove('training/*.csv')
+        os.remove('training/dataTrainingR'+str(x)+'.csv')
+    except OSError, e:  ## if failed, report it back to the user ##
+        print ("Error: %s - %s." % (e.filename,e.strerror))
+    
 
-nilai.append(applyFeatureAll(result,feature1,1))
-nilai.append(applyFeatureAll(result,feature2,2))
-nilai.append(applyFeatureAll(result,feature3,3))
-nilai.append(applyFeatureAll(result,feature4,4))
-nilai.append(applyFeatureAll(result,feature5,5))
+nilai.append(applyFeatureAll(0,result,feature1,1))
+nilai.append(applyFeatureAll(0,result,feature2,2))
+nilai.append(applyFeatureAll(0,result,feature3,3))
+nilai.append(applyFeatureAll(0,result,feature4,4))
+nilai.append(applyFeatureAll(0,result,feature5,5))
 
-myFile = open('example2.csv', 'w')
-with myFile:
-    writer = csv.writer(myFile)
-    writer.writerows(nilai)
+
 
 dataTraining = adaboost()
 
