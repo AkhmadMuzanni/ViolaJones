@@ -29,9 +29,11 @@ nilai4 = []
 nilai5 = []
 nilai = [[],[]]
 dataTraining = np.array(10)
-theta = 0.7 # threshold
+theta = 10 # threshold
 gambar = []
-
+m = 9
+l = 3
+w = 1.0/(l+m)
 # method integralImage to generate the value of integralimage of image to array result
 def integralImage(image):
     res = np.zeros((result.shape[0],result.shape[1]),dtype=int)
@@ -68,9 +70,9 @@ def applyFeatureAll(noImage, res, feature, noFeature):
     
     for x in range(len(feature)):        
         if (noImage == 0):
-            fileImage = open('training/dataTrainingR0.csv', 'a')
+            fileImage = open('training/dataTraining0.csv', 'a')
         else:
-            fileImage = open('training/dataTrainingR'+str(noImage)+'.csv', 'a')
+            fileImage = open('training/dataTraining'+str(noImage)+'.csv', 'a')
         with fileImage:
             writer = csv.writer(fileImage)
             a = 0
@@ -120,21 +122,10 @@ def applyFeatureAll(noImage, res, feature, noFeature):
         fileImage.close()
     return values
 
-def adaboost():
-    # count probability distribution as initial weight
-    total = 0
-    for i in range(len(nilai[0])):
-        for j in range(len(nilai[0][i])):
-            total += nilai[0][i][j][5]
-    print(1.0/total)
-    # assign inital weigth to all feature
-    for i in range(len(nilai[0])):
-        for j in range(len(nilai[0][i])):
-            nilai[0][i][j].append(1.0/total)
-    
-    value = []    
-    # loop for data training
-    for x in range(2):
+def setDataTraining():      
+    value = []
+    # loop for data training (positive)
+    for x in range(3):
         #result = integralImage(cv2.imread('bahan/positif/'+str(x+1)+'.jpg',0))        
         pict = cv2.imread('bahan/positif/r'+str(x+1)+'.jpg',0)
         value.append([[],[1]])
@@ -143,13 +134,64 @@ def adaboost():
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature3,3))
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature4,4))
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature5,5))
-        gambar.append(value)
+        
         #print(result)
         #dataTraining.append(result)
         #dataTraining.append(cv2.imread('bahan/positif/1.jpg',0))
      #= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    # loop for data training (negative)
+    for x in range(9):
+        #result = integralImage(cv2.imread('bahan/positif/'+str(x+1)+'.jpg',0))        
+        pict = cv2.imread('bahan/negatif/br'+str(x+1)+'.jpg',0)
+        value.append([[],[0]])
+        value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature1,1))
+        value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature2,2))
+        value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature3,3))
+        value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature4,4))
+        value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature5,5))
         
     return value   
+
+def adaboost():
+    # count initial weight. (between 1/m until 1/n, with m and l are number of negative and positive image)    
+    #m = 9
+    #l = 3
+    #w = 1.0/(m+l)
+    '''total = 0
+    for i in range(len(nilai[0])):
+        for j in range(len(nilai[0][i])):
+            total += nilai[0][i][j][5]
+    print(1.0/total)'''
+    # assign inital weigth to all feature
+    for i in range(len(nilai[0])):
+        for j in range(len(nilai[0][i])):
+            # assign p
+            nilai[0][i][j].append(1)
+            # assign weight
+            nilai[0][i][j].append(w)
+            # assign error
+            nilai[0][i][j].append(1)
+            
+    minValue = 99999
+    argMin = [0,0,0]
+    for i in range(len(nilai[0])):
+        for j in range(len(nilai[0][i])): 
+            h = 1
+            p = nilai[0][i][j][6]
+            if (p*nilai[0][i][j][5] < p*theta):
+                h = 0
+            nilai[0][i][j][8] = 0
+            for x in range(len(dataTraining)):                
+                nilai[0][i][j][8] += dataTraining[x][0][i][j][5] * np.abs(dataTraining[x][1][0] - h)
+            if (nilai[0][i][j][8] < minValue):
+                minValue = nilai[0][i][j][8]
+                argMin[0] = nilai[0][i][j]
+    
+    print(minValue)
+    print(argMin[0])
+                #argMin[0]
+            #nilai[0][i][j].append(minValue)
+    
 
 # generate value of integral image
 result = integralImage(image)
@@ -179,7 +221,7 @@ haarFeature(feature5,2,2)
 for x in range(2):
     try:
         os.remove('training/*.csv')
-        os.remove('training/dataTrainingR'+str(x)+'.csv')
+        os.remove('training/dataTraining'+str(x)+'.csv')
     except OSError, e:  ## if failed, report it back to the user ##
         print ("Error: %s - %s." % (e.filename,e.strerror))
     
@@ -191,7 +233,8 @@ nilai[0].append(applyFeatureAll(0,result,feature4,4))
 nilai[0].append(applyFeatureAll(0,result,feature5,5))
 
 
-dataTraining = adaboost()
+dataTraining = setDataTraining()
+adaboost()
 
 #with open('example4.csv', 'w') as csvfile:
 #    fieldnames = ['first_name', 'last_name', 'Grade']
