@@ -125,10 +125,10 @@ def applyFeatureAll(noImage, res, feature, noFeature):
 def setDataTraining():      
     value = []
     # loop for data training (positive)
-    for x in range(3):
+    for x in range(l):
         #result = integralImage(cv2.imread('bahan/positif/'+str(x+1)+'.jpg',0))        
         pict = cv2.imread('bahan/positif/r'+str(x+1)+'.jpg',0)
-        value.append([[],[1]])
+        value.append([[],1,1.0/l])
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature1,1))
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature2,2))
         value[x][0].append(applyFeatureAll((x+1),integralImage(pict),feature3,3))
@@ -140,10 +140,10 @@ def setDataTraining():
         #dataTraining.append(cv2.imread('bahan/positif/1.jpg',0))
      #= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     # loop for data training (negative)
-    for x in range(9):
+    for x in range(m):
         #result = integralImage(cv2.imread('bahan/positif/'+str(x+1)+'.jpg',0))        
         pict = cv2.imread('bahan/negatif/br'+str(x+1)+'.jpg',0)
-        value.append([[],[0]])
+        value.append([[],0,1.0/m])
         value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature1,1))
         value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature2,2))
         value[l+x][0].append(applyFeatureAll((l+x+1),integralImage(pict),feature3,3))
@@ -162,36 +162,101 @@ def adaboost():
         for j in range(len(nilai[0][i])):
             total += nilai[0][i][j][5]
     print(1.0/total)'''
-    # assign inital weigth to all feature
+    theta = 10
+    p = 1
+    
     for i in range(len(nilai[0])):
         for j in range(len(nilai[0][i])):
             # assign p
             nilai[0][i][j].append(1)
-            # assign weight
-            nilai[0][i][j].append(w)
             # assign error
-            nilai[0][i][j].append(1)
-            
-    minValue = 99999
-    argMin = [0,0,0]
+            nilai[0][i][j].append(0)
+    
+    # iterate for all feature
     for i in range(len(nilai[0])):
-        for j in range(len(nilai[0][i])): 
-            h = 1
-            p = nilai[0][i][j][6]
-            if (p*nilai[0][i][j][5] < p*theta):
+        for j in range(len(nilai[0][i])):           
+    
+            # 1. Re-Normalize the weight of all images
+            total = 0
+            for a in range(len(dataTraining)):
+                total += dataTraining[a][2]
+            for a in range(len(dataTraining)):
+                dataTraining[a][2] = dataTraining[a][2] / total
+            
+            #2. find minimal error
+            minValue = 9999
+            argMin = []
+            for a in range(len(dataTraining)):
                 h = 0
-            nilai[0][i][j][8] = 0
-            for x in range(len(dataTraining)):                
-                nilai[0][i][j][8] += dataTraining[x][0][i][j][5] * np.abs(dataTraining[x][1][0] - h)
-            if (nilai[0][i][j][8] < minValue):
-                minValue = nilai[0][i][j][8]
-                argMin[0] = nilai[0][i][j]
+                if (p*nilai[0][i][j][5] < p*theta):
+                    h = 1
+                nilai[0][i][j][7] += dataTraining[a][2]*np.abs(h-dataTraining[a][1])
+                if (nilai[0][i][j][7] < minValue):
+                    minValue = nilai[0][i][j][7]
+                    argMin = nilai[0][i][j]
+                    
+            print(minValue)
+            print(argMin)
+                
+                
     
-    print(minValue)
-    print(argMin[0])
-                #argMin[0]
-            #nilai[0][i][j].append(minValue)
     
+                
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # assign inital weigth to all image
+    '''for a in range(3):
+        for i in range(len(nilai[0])):
+            for j in range(len(nilai[0][i])):
+                # assign p
+                nilai[0][i][j].append(1)
+                # assign weight
+                nilai[0][i][j].append(w)
+                # assign error
+                nilai[0][i][j].append(1)
+                
+        minValue = 99999
+        argMin = [0,0,0]
+        for i in range(len(nilai[0])):
+            for j in range(len(nilai[0][i])): 
+                h = 1
+                p = nilai[0][i][j][6]
+                if (p*nilai[0][i][j][5] < p*theta):
+                    h = 0
+                nilai[0][i][j][8] = 0
+                for x in range(len(dataTraining)):                
+                    nilai[0][i][j][8] += dataTraining[x][0][i][j][5] * np.abs(dataTraining[x][1] - h)                    
+                if (nilai[0][i][j][8] < minValue):
+                    minValue = nilai[0][i][j][8]
+                    argMin[0] = nilai[0][i][j]
+                beta = nilai[0][i][j][8] / (1 - nilai[0][i][j][8])
+                w = w * np.power(beta,1-)
+        
+        print(a)
+        print(minValue)
+        print(argMin[0])
+        theta = argMin[0][5]'''
+        
+                    #argMin[0]
+                #nilai[0][i][j].append(minValue)
+
+# delete all previous training data
+for x in range(l+m):
+    try:        
+        os.remove('training/dataTraining'+str(x)+'.csv')
+    except OSError, e:  ## if failed, report it back to the user ##
+        print ("Error: %s - %s." % (e.filename,e.strerror))
 
 # generate value of integral image
 result = integralImage(image)
@@ -218,12 +283,7 @@ haarFeature(feature5,2,2)
 #applyFeature(feature3,nilai3)
 #applyFeature(feature4,nilai4)
 #applyFeature(feature5,nilai5)
-for x in range(2):
-    try:
-        os.remove('training/*.csv')
-        os.remove('training/dataTraining'+str(x)+'.csv')
-    except OSError, e:  ## if failed, report it back to the user ##
-        print ("Error: %s - %s." % (e.filename,e.strerror))
+
     
 
 nilai[0].append(applyFeatureAll(0,result,feature1,1))
